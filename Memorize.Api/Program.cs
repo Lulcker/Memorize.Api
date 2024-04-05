@@ -49,6 +49,8 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddControllers();
 
+builder.Services.AddLogging();
+
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

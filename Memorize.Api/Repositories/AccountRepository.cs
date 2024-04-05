@@ -11,19 +11,24 @@ namespace Memorize.Api.Repositories
     public class AccountRepository : IAccountRepository
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<AccountRepository> _logger;
         private static IConfigurationRoot MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-        public AccountRepository(UserManager<IdentityUser> userManager)
+        public AccountRepository(UserManager<IdentityUser> userManager, ILogger<AccountRepository> logger)
         {
             _userManager = userManager;
+            _logger = logger;
         }
 
         public async Task<(bool, AuthResponse)> Register(RegistrationRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Name);
+            var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user != null)
+            {
+                _logger.LogInformation("Пользователь с такой почтой уже зарегистрирован");
                 return (false, new AuthResponse() { Errors = new List<string>() { "Пользователь с такой почтой уже зарегистрирован" } });
+            }
 
             var newUser = new IdentityUser() { Email = request.Name, UserName = request.Email };
 
